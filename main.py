@@ -15,6 +15,8 @@ def main():
     graph = Graph(vertices, edges)
     if plot_graph:
         graph.plot()
+    result = chinese_postman(graph, 1)
+    print(result)
 
 
 if __name__ == "__main__":

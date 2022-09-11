@@ -6,11 +6,21 @@
     "configurations": [
         
         {
-            "name": "main.py",
+            "name": "main.py simple",
             "type": "python",
             "request": "launch",
             "program": "main.py",
-            "args": ["-i","tests/examples/simple1.txt"],
+            "args": ["-i","examples/simple1.txt"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        
+        {
+            "name": "main.py paris",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "args": ["-i","examples/paris_map.txt"],
             "console": "integratedTerminal",
             "justMyCode": true
         }
