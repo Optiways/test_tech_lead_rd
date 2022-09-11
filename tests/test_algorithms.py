@@ -37,5 +37,5 @@ for item in os.scandir("tests/fixtures/chinese_postman"):
 @pytest.mark.parametrize("test_case", testset.keys())
 def test_chinese_postman(test_case):
     g, expected = testset[test_case]
-    output = chinese_postman(g, start_node=1)
+    output = chinese_postman(g)
     assert output == expected
