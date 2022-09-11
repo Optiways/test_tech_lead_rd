@@ -144,7 +144,9 @@ def chinese_postman(graph: Graph, start_node: int = 0) -> Tuple[list[int], float
     """
     print("Starting chinese postman problem search")
     if nx.is_eulerian(graph.nxgraph):
-        return nx.eulerian_path(graph.nx_graph)
+        path = list(nx.eulerian_circuit(graph.nxgraph))
+        weight = nx.path_weight(graph.nxgraph, [u for u, _ in path] + [path[0][0]], weight="weight")
+        return path, weight
     odd_nodes = graph.get_odd_nodes()
     odd_node_pairs = list(itertools.combinations(odd_nodes, 2))
     logger.info("get augmenting path for odd nodes")
