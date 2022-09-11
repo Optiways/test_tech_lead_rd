@@ -2,7 +2,7 @@ import os
 import re
 
 import pytest
-from cpp.algorithms import chinese_postman
+from cpp.algorithms import chinese_postman, _get_odd_nodes
 from cpp.graph import Graph
 from cpp.input import parse_file
 
@@ -38,4 +38,8 @@ for item in os.scandir("tests/fixtures/chinese_postman"):
 def test_chinese_postman(test_case):
     g, expected = testset[test_case]
     output = chinese_postman(g)
-    assert output == expected
+    assert output == [expected]
+
+
+def test_get_odd_nodes(test_graph: Graph):
+    assert _get_odd_nodes(test_graph.nxgraph) == [1, 2, 3, 4]

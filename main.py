@@ -16,7 +16,11 @@ def main():
     if plot_graph:
         graph.plot()
     result = chinese_postman(graph, 1)
-    print(result)
+    if len(result) > 1:
+        for i, r in enumerate(result):
+            print(f"Path #{i+1}/{len(result)} > {r}")
+    else:
+        print(result[0])
 
 
 if __name__ == "__main__":

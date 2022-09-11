@@ -16,6 +16,15 @@
         },
         
         {
+            "name": "main.py islands",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "args": ["-i","examples/islands.txt"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "main.py paris",
             "type": "python",
             "request": "launch",

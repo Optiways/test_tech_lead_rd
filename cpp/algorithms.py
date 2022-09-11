@@ -22,6 +22,19 @@ def _flatten_circuit_edge(edge: dict):
     return subpath, weight
 
 
+def _get_odd_nodes(g):
+    """
+    Helper function to get odd nodes
+    Returns:
+        list[str]: list of node names of odd or even degree
+    """
+    degree_nodes = []
+    for v, d in g.degree():
+        if d % 2 == 1:
+            degree_nodes.append(v)
+    return degree_nodes
+
+
 def _create_eulerian_circuit(graph_augmented, graph_original, start_node=None):
     """
     networkx.eulerian_circuit only returns the order in which we hit each node.  It does not return the attributes of the
@@ -38,7 +51,8 @@ def _create_eulerian_circuit(graph_augmented, graph_original, start_node=None):
     Returns:
         networkx graph (`graph_original`) augmented with edges directly between the odd nodes
     """
-
+    if start_node is not None and not graph_augmented.has_node(start_node):
+        start_node = None
     euler_circuit = list(
         nx.eulerian_circuit(graph_augmented, source=start_node, keys=True)
     )
@@ -132,7 +146,41 @@ def _get_shortest_paths_distances(graph: Graph, pairs: List[Tuple[int]]):
     return distances
 
 
-def chinese_postman(graph: Graph, start_node: int = 0) -> Tuple[list[int], float]:
+def _chinese_postman(nxgraph: nx.Graph, start_node: int = 0) -> Tuple[list[int], float]:
+    if nx.is_eulerian(nxgraph):
+        path = list(nx.eulerian_circuit(nxgraph))
+        weight = nx.path_weight(
+            nxgraph, [u for u, _ in path] + [path[0][0]], weight="weight"
+        )
+        return path, weight
+    odd_nodes = _get_odd_nodes(nxgraph)
+    odd_node_pairs = list(itertools.combinations(odd_nodes, 2))
+    logger.info("get augmenting path for odd nodes")
+    print("get augmenting path for odd nodes")
+    odd_node_pairs_shortest_paths = _get_shortest_paths_distances(
+        nxgraph, odd_node_pairs
+    )
+    g_odd_complete = _create_complete_graph(odd_node_pairs_shortest_paths)
+
+    print("Find min weight matching")
+    odd_matching = nx.algorithms.min_weight_matching(g_odd_complete)
+
+    print("add the min weight matching edges to g")
+    graph_aug = _add_augmenting_path_to_graph(nxgraph, odd_matching)
+
+    print("get eulerian circuit route")
+    circuit = _create_eulerian_circuit(graph_aug, nxgraph, start_node)
+    result = []
+    total_weight = 0
+    for edge in circuit:
+        subpath, weight = _flatten_circuit_edge(edge)
+        result.extend(subpath)
+        total_weight += weight
+
+    return result, total_weight
+
+
+def chinese_postman(graph: Graph, start_node: int = 0) -> List[Tuple[list[int], float]]:
     """Will compute the minimum weight path that gets through all edged of a positively weighted graph.
 
     Args:
@@ -143,32 +191,13 @@ def chinese_postman(graph: Graph, start_node: int = 0) -> Tuple[list[int], float
         Tuple[list[int], float]: list of nodes travelled, total sum of trip
     """
     print("Starting chinese postman problem search")
-    if nx.is_eulerian(graph.nxgraph):
-        path = list(nx.eulerian_circuit(graph.nxgraph))
-        weight = nx.path_weight(graph.nxgraph, [u for u, _ in path] + [path[0][0]], weight="weight")
-        return path, weight
-    odd_nodes = graph.get_odd_nodes()
-    odd_node_pairs = list(itertools.combinations(odd_nodes, 2))
-    logger.info("get augmenting path for odd nodes")
-    print("get augmenting path for odd nodes")
-    odd_node_pairs_shortest_paths = _get_shortest_paths_distances(
-        graph.nxgraph, odd_node_pairs
-    )
-    g_odd_complete = _create_complete_graph(odd_node_pairs_shortest_paths)
-
-    print("Find min weight matching")
-    odd_matching = nx.algorithms.min_weight_matching(g_odd_complete)
-
-    print("add the min weight matching edges to g")
-    graph_aug = _add_augmenting_path_to_graph(graph.nxgraph, odd_matching)
-
-    print("get eulerian circuit route")
-    circuit = _create_eulerian_circuit(graph_aug, graph.nxgraph, start_node)
-    result = []
-    total_weight = 0
-    for edge in circuit:
-        subpath, weight = _flatten_circuit_edge(edge)
-        result.extend(subpath)
-        total_weight += weight
-
-    return result, total_weight
+    nxgraph = graph.nxgraph
+    if not nx.is_connected(nxgraph):
+        print("The graph is not connected.")
+        subgraphs = [
+            nxgraph.subgraph(c).copy() for c in nx.connected_components(nxgraph)
+        ]
+        print(f"Computing distinct solutions for each {len(subgraphs)} subgraphs")
+        return [_chinese_postman(s) for s in subgraphs]
+    else:
+        return [_chinese_postman(nxgraph)]

@@ -46,37 +46,3 @@ class Graph:
         plt.title(f"#E={len(self.edges)}, #V={len(self.vertices)}")
         plt.show()
         plt.savefig(sys.stdout.buffer)
-
-    def _get_even_or_odd_nodes(self, mod):
-        """
-        Helper function for get_even_nodes. Return names of the odd or even nodes
-        Args:
-            mod (int): 0 for even, 1 for odd
-
-        Returns:
-            list[str]: list of node names of odd or even degree
-        """
-        degree_nodes = []
-        for v, d in self.nxgraph.degree():
-            if d % 2 == mod:
-                degree_nodes.append(v)
-        return degree_nodes
-
-    def get_odd_nodes(self):
-        """
-        Return nodes whose degree is odd.
-
-        Returns:
-            list[str]: names of nodes with odd degree
-        """
-        return self._get_even_or_odd_nodes(1)
-
-    def get_even_nodes(self):
-        """
-        Return nodes whose degree is even.
-
-        Returns:
-            list[str]: names of nodes with even degree
-
-        """
-        return self._get_even_or_odd_nodes(0)
