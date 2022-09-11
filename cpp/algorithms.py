@@ -10,6 +10,13 @@ logger = logging.getLogger("algo")
 
 
 def _flatten_circuit_edge(edge: dict):
+    """This converts an augmented edge to its full developed path, along its their weight.
+    Args:
+        edge (dict): the edge. Might be a native simple edge, or an augmented edge that matches a path.
+
+    Returns:
+        list[tuples], int: the path as a list of (origin, destination), the weight
+    """
     origin = edge[0]
     destination = edge[1]
     weight = edge[3]["weight"]
@@ -156,7 +163,6 @@ def _chinese_postman(nxgraph: nx.Graph, start_node: int = 0) -> Tuple[list[int],
         return path, weight
     odd_nodes = _get_odd_nodes(nxgraph)
     odd_node_pairs = list(itertools.combinations(odd_nodes, 2))
-    logger.info("get augmenting path for odd nodes")
     print("get augmenting path for odd nodes")
     odd_node_pairs_shortest_paths = _get_shortest_paths_distances(
         nxgraph, odd_node_pairs
