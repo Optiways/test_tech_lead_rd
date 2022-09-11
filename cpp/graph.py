@@ -1,8 +1,10 @@
 from __future__ import annotations
-import matplotlib.pyplot as plt
-from matplotlib.collections import LineCollection
+
 import sys
+
+import matplotlib.pyplot as plt
 import networkx as nx
+from matplotlib.collections import LineCollection
 
 
 class Graph:

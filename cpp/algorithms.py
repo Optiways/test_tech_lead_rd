@@ -1,9 +1,10 @@
 import itertools
 import logging
 from typing import List, Tuple
-from cpp.graph import Graph
+
 import networkx as nx
 
+from cpp.graph import Graph
 
 logger = logging.getLogger("algo")
 
@@ -198,6 +199,6 @@ def chinese_postman(graph: Graph, start_node: int = 0) -> List[Tuple[list[int], 
             nxgraph.subgraph(c).copy() for c in nx.connected_components(nxgraph)
         ]
         print(f"Computing distinct solutions for each {len(subgraphs)} subgraphs")
-        return [_chinese_postman(s) for s in subgraphs]
+        return [_chinese_postman(s, start_node) for s in subgraphs]
     else:
-        return [_chinese_postman(nxgraph)]
+        return [_chinese_postman(nxgraph, start_node)]
